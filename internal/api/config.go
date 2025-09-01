@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Hits 		atomic.Int32
 	DB 			*database.Queries
+	SigningKey 	string
 	Platform	string
 }
 

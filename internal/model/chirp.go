@@ -13,7 +13,7 @@ import (
 	"github.com/smcallister/chirpy/internal/database"
 )
 
-func NewChirp(context context.Context, r io.Reader, db *database.Queries) (*database.Chirp, error) {
+func NewChirp(context context.Context, userID uuid.UUID, r io.Reader, db *database.Queries) (*database.Chirp, error) {
 	// Decode the chirp.
 	decoder := json.NewDecoder(r)
     var chirp database.Chirp
@@ -21,6 +21,8 @@ func NewChirp(context context.Context, r io.Reader, db *database.Queries) (*data
     if err != nil {
 		return nil, err
 	}
+
+	chirp.UserID = userID
 
 	// Validate the chirp.
 	if len(chirp.Body) > 140 {

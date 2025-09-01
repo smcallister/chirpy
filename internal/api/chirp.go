@@ -7,15 +7,32 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/smcallister/chirpy/internal/auth"
 	"github.com/smcallister/chirpy/internal/model"
 )
 
 func (cfg *Config) CreateChirpHandler(res http.ResponseWriter, req *http.Request) {
+	// Get the token from the request.
+	token, err := auth.GetBearerToken(req.Header)
+	if err != nil {
+		res.WriteHeader(401)
+		res.Write([]byte("{\"error\": \"Missing or invalid token\"}"))
+		return
+	}
+
+	// Validate the token.
+	userID, err := auth.ValidateJWT(token, cfg.SigningKey)
+	if err != nil {
+		res.WriteHeader(401)
+		res.Write([]byte("{\"error\": \"Missing or invalid token\"}"))
+		return
+	}
+
 	// Add headers.
 	res.Header().Add("Content-Type", "application/json")
 
 	// Create the chirp.
-	chirp, err := model.NewChirp(req.Context(), req.Body, cfg.DB)
+	chirp, err := model.NewChirp(req.Context(), userID, req.Body, cfg.DB)
 	if err != nil {
 		res.WriteHeader(400)
 		res.Write([]byte(fmt.Sprintf("{\"error\": \"%v\"}", err)))

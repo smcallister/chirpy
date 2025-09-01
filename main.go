@@ -32,7 +32,8 @@ func main() {
 
 	apiCfg := api.Config{
 		DB: database.New(db),
-		Platform: os.Getenv("PLATFORM")}
+		Platform: os.Getenv("PLATFORM"),
+		SigningKey: os.Getenv("JWT_SIGNING_KEY")}
 
 	// Set up the handlers.
 	mux := http.NewServeMux()
@@ -44,6 +45,9 @@ func main() {
 	
 	mux.HandleFunc("GET /api/healthz", http.HandlerFunc(healthzHandler))
 	mux.HandleFunc("POST /api/users", http.HandlerFunc(apiCfg.CreateUserHandler))
+	mux.HandleFunc("POST /api/login", http.HandlerFunc(apiCfg.LoginHandler))
+	mux.HandleFunc("POST /api/refresh", http.HandlerFunc(apiCfg.RefreshHandler))
+	mux.HandleFunc("POST /api/revoke", http.HandlerFunc(apiCfg.RevokeHandler))
 
 	mux.HandleFunc("GET /api/chirps", http.HandlerFunc(apiCfg.GetChirpsHandler))
 	mux.HandleFunc("GET /api/chirps/{id}", http.HandlerFunc(apiCfg.GetChirpHandler))

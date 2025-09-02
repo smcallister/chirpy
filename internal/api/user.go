@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/smcallister/chirpy/internal/auth"
+	"github.com/smcallister/chirpy/internal/database"
 	"github.com/smcallister/chirpy/internal/model"
 )
 
@@ -31,6 +32,70 @@ func (cfg *Config) CreateUserHandler(res http.ResponseWriter, req *http.Request)
     }
 
 	res.WriteHeader(201)
+	res.Write(resBody)
+}
+
+func (cfg *Config) UpdateUserHandler(res http.ResponseWriter, req *http.Request) {
+	// Add headers.
+	res.Header().Add("Content-Type", "application/json")
+
+	// Get the token from the request.
+	token, err := auth.GetBearerToken(req.Header)
+	if err != nil {
+		res.WriteHeader(401)
+		res.Write([]byte("{\"error\": \"Missing or invalid token\"}"))
+		return
+	}
+
+	// Validate the token.
+	userID, err := auth.ValidateJWT(token, cfg.SigningKey)
+	if err != nil {
+		res.WriteHeader(401)
+		res.Write([]byte("{\"error\": \"Missing or invalid token\"}"))
+		return
+	}
+
+	// Decode the input.
+	decoder := json.NewDecoder(req.Body)
+    var input model.UserInput
+    err = decoder.Decode(&input)
+    if err != nil {
+		res.WriteHeader(400)
+		res.Write([]byte(fmt.Sprintf("{\"error\": \"%v\"}", err)))
+		return
+	}
+
+	// Hash the password.
+	hashedPassword, err := auth.HashPassword(input.Password)
+	if err != nil {
+		res.WriteHeader(500)
+		res.Write([]byte(fmt.Sprintf("{\"error\": \"%v\"}", err)))
+		return
+	}
+
+	// Update the user.
+	var params = database.UpdateUserParams{
+		ID: 			userID,
+		Email: 			input.Email,
+		HashedPassword: hashedPassword,
+		UpdatedAt: 		time.Now() }
+
+	user, err := cfg.DB.UpdateUser(req.Context(), params)
+	if err != nil {
+		res.WriteHeader(400)
+		res.Write([]byte(fmt.Sprintf("{\"error\": \"%v\"}", err)))
+		return
+	}
+
+	// Write the response.
+	resBody, err := json.Marshal(user)
+    if err != nil {
+        res.WriteHeader(500)
+		res.Write([]byte(fmt.Sprintf("{\"error\": \"%v\"}", err)))
+		return
+    }
+
+	res.WriteHeader(200)
 	res.Write(resBody)
 }
 

@@ -45,6 +45,8 @@ func main() {
 	
 	mux.HandleFunc("GET /api/healthz", http.HandlerFunc(healthzHandler))
 	mux.HandleFunc("POST /api/users", http.HandlerFunc(apiCfg.CreateUserHandler))
+	mux.HandleFunc("PUT /api/users", http.HandlerFunc(apiCfg.UpdateUserHandler))
+	
 	mux.HandleFunc("POST /api/login", http.HandlerFunc(apiCfg.LoginHandler))
 	mux.HandleFunc("POST /api/refresh", http.HandlerFunc(apiCfg.RefreshHandler))
 	mux.HandleFunc("POST /api/revoke", http.HandlerFunc(apiCfg.RevokeHandler))
@@ -52,6 +54,7 @@ func main() {
 	mux.HandleFunc("GET /api/chirps", http.HandlerFunc(apiCfg.GetChirpsHandler))
 	mux.HandleFunc("GET /api/chirps/{id}", http.HandlerFunc(apiCfg.GetChirpHandler))
 	mux.HandleFunc("POST /api/chirps", http.HandlerFunc(apiCfg.CreateChirpHandler))
+	mux.HandleFunc("DELETE /api/chirps/{id}", http.HandlerFunc(apiCfg.DeleteChirpHandler))
 
 	// Create the server.	
 	server := http.Server{Handler: mux, Addr: ":8080"}

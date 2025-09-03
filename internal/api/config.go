@@ -12,6 +12,7 @@ type Config struct {
 	DB 			*database.Queries
 	SigningKey 	string
 	Platform	string
+	PolkaKey    string
 }
 
 func (cfg *Config) MiddlewareMetricsInc(next http.Handler) http.Handler {

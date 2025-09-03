@@ -31,9 +31,10 @@ func main() {
 	}
 
 	apiCfg := api.Config{
-		DB: database.New(db),
-		Platform: os.Getenv("PLATFORM"),
-		SigningKey: os.Getenv("JWT_SIGNING_KEY")}
+		DB: 		database.New(db),
+		Platform: 	os.Getenv("PLATFORM"),
+		SigningKey: os.Getenv("JWT_SIGNING_KEY"),
+		PolkaKey: 	os.Getenv("POLKA_KEY")}
 
 	// Set up the handlers.
 	mux := http.NewServeMux()
@@ -55,6 +56,8 @@ func main() {
 	mux.HandleFunc("GET /api/chirps/{id}", http.HandlerFunc(apiCfg.GetChirpHandler))
 	mux.HandleFunc("POST /api/chirps", http.HandlerFunc(apiCfg.CreateChirpHandler))
 	mux.HandleFunc("DELETE /api/chirps/{id}", http.HandlerFunc(apiCfg.DeleteChirpHandler))
+
+	mux.HandleFunc("POST /api/polka/webhooks", http.HandlerFunc(apiCfg.PolkaWebhookHandler))
 
 	// Create the server.	
 	server := http.Server{Handler: mux, Addr: ":8080"}

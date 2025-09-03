@@ -122,11 +122,11 @@ func (cfg *Config) LoginHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	user := model.User{
-		ID: row.ID,
-		CreatedAt: row.CreatedAt,
-		UpdatedAt: row.UpdatedAt,
-		Email: row.Email,
-	}
+		ID: 		 row.ID,
+		CreatedAt:   row.CreatedAt,
+		UpdatedAt:   row.UpdatedAt,
+		Email: 		 row.Email,
+		IsChripyRed: row.IsChirpyRed }
 
 	// Make sure the passwords match.
 	err = auth.CheckPasswordHash(login.Password, row.HashedPassword)

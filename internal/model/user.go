@@ -24,6 +24,7 @@ type User struct {
 	Email          string    `json:"email"`
 	AccessToken    string    `json:"token"`
 	RefreshToken   string    `json:"refresh_token"`
+	IsChripyRed    bool      `json:"is_chirpy_red"`
 }
 
 func NewUser(context context.Context, r io.Reader, db *database.Queries) (*User, error) {

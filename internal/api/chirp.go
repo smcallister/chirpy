@@ -146,7 +146,7 @@ func (cfg *Config) DeleteChirpHandler(res http.ResponseWriter, req *http.Request
 		return
     }
 
-	var params = database.DeleteChirpParams{
+ 	params := database.DeleteChirpParams{
 		ID:     id,
 		UserID: userID}
 
